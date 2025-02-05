@@ -65,11 +65,8 @@ function testAccount(account: string) {
   <div class="min-h-500px w-full flex-col-stretch-center p-12">
     <div class="mb-6 space-y-2">
       <h3 class="text-4xl color-[var(--el-text-color-primary)] font-bold">
-        欢迎使用 👋🏻
-      </h3>
-      <p class="text-sm text-muted-foreground lg:text-base">
         {{ title }}
-      </p>
+      </h3>
     </div>
     <div v-show="type === 'default'">
       <form @submit="onSubmit">
