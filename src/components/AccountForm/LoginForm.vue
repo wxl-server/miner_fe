@@ -25,7 +25,7 @@ const title = import.meta.env.VITE_APP_TITLE
 const loading = ref(false)
 
 // 登录方式，default 账号密码登录，qrcode 扫码登录
-const type = ref<'default' | 'qrcode'>('default')
+const type = ref<'default'>('default')
 
 const form = useForm({
   validationSchema: toTypedSchema(z.object({
@@ -71,14 +71,6 @@ function testAccount(account: string) {
         {{ title }}
       </p>
     </div>
-    <!--    <div class="mb-4"> -->
-    <!--      <FaTabs -->
-    <!--        v-model="type" :list="[ -->
-    <!--          { label: '账号密码登录', value: 'default' }, -->
-    <!--          { label: '扫码登录', value: 'qrcode' }, -->
-    <!--        ]" class="inline-flex" -->
-    <!--      /> -->
-    <!--    </div> -->
     <div v-show="type === 'default'">
       <form @submit="onSubmit">
         <FormField v-slot="{ componentField, errors }" name="account">
@@ -136,14 +128,6 @@ function testAccount(account: string) {
           <FaButton variant="outline" size="sm" plain @click="testAccount('test')">
             test
           </FaButton>
-        </div>
-      </div>
-    </div>
-    <div v-show="type === 'qrcode'">
-      <div class="flex-col-center">
-        <img src="https://s2.loli.net/2024/04/26/GsahtuIZ9XOg5jr.png" class="h-[250px] w-[250px]">
-        <div class="mt-2 text-sm text-secondary-foreground op-50">
-          请使用微信扫码登录
         </div>
       </div>
     </div>
