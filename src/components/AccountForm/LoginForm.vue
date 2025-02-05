@@ -71,14 +71,14 @@ function testAccount(account: string) {
         {{ title }}
       </p>
     </div>
-    <div class="mb-4">
-      <FaTabs
-        v-model="type" :list="[
-          { label: '账号密码登录', value: 'default' },
-          { label: '扫码登录', value: 'qrcode' },
-        ]" class="inline-flex"
-      />
-    </div>
+    <!--    <div class="mb-4"> -->
+    <!--      <FaTabs -->
+    <!--        v-model="type" :list="[ -->
+    <!--          { label: '账号密码登录', value: 'default' }, -->
+    <!--          { label: '扫码登录', value: 'qrcode' }, -->
+    <!--        ]" class="inline-flex" -->
+    <!--      /> -->
+    <!--    </div> -->
     <div v-show="type === 'default'">
       <form @submit="onSubmit">
         <FormField v-slot="{ componentField, errors }" name="account">
