@@ -1,21 +1,9 @@
-FROM golang:1.23.5-alpine3.21
+FROM nginx:latest
 LABEL authors="wxl"
-EXPOSE 8888
+EXPOSE 80
 
-# 设置工作目录
-WORKDIR /app
+# 复制 dist文件夹内所有文件到 Nginx 的默认 HTML 目录
+COPY dist /usr/share/nginx/html
 
-# 复制 go.mod 和 go.sum 文件
-COPY go.mod go.sum ./
-
-# 下载依赖
-RUN go mod download
-
-# 复制项目文件
-COPY . .
-
-# 编译 Go 代码
-RUN sh build.sh
-
-# 设置容器启动时运行的命令
-CMD ["sh", "/app/output/bootstrap.sh"]
+# 复制自定义的 Nginx 配置文件到容器
+COPY default.conf /etc/nginx/conf.d/default.conf

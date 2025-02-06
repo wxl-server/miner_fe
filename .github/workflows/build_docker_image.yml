@@ -28,6 +28,30 @@ jobs:
 #        id: extract_tag
 #        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # 可以根据项目需求修改 Node.js 版本
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: pnpm install
+        run: pnpm install
+
+      - name: pnpm run build
+        run: pnpm run build
+
       - name: Build and push Docker image
         run: |
           docker build -t registry.cn-hangzhou.aliyuncs.com/${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }} .
