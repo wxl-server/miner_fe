@@ -32,7 +32,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18' # 可以根据项目需求修改 Node.js 版本
-          cache: 'pnpm'
 
       - name: Install pnpm
         run: npm install -g pnpm
