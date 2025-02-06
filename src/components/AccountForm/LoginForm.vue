@@ -102,9 +102,9 @@ function testAccount(account: string) {
               </FormItem>
             </FormField>
           </div>
-          <FaButton variant="link" class="h-auto p-0" type="button" @click="emits('onResetPassword', form.values.account)">
-            忘记密码了?
-          </FaButton>
+          <!--          <FaButton variant="link" class="h-auto p-0" type="button" @click="emits('onResetPassword', form.values.account)"> -->
+          <!--            忘记密码了? -->
+          <!--          </FaButton> -->
         </div>
         <FaButton :loading="loading" size="lg" class="w-full" type="submit">
           登录
@@ -116,17 +116,17 @@ function testAccount(account: string) {
           </FaButton>
         </div>
       </form>
-      <div class="mt-4 text-center -mb-4">
-        <FaDivider>演示账号一键登录</FaDivider>
-        <div class="space-x-2">
-          <FaButton variant="default" size="sm" plain @click="testAccount('admin')">
-            admin
-          </FaButton>
-          <FaButton variant="outline" size="sm" plain @click="testAccount('test')">
-            test
-          </FaButton>
-        </div>
-      </div>
+      <!--      <div class="mt-4 text-center -mb-4"> -->
+      <!--        <FaDivider>演示账号一键登录</FaDivider> -->
+      <!--        <div class="space-x-2"> -->
+      <!--          <FaButton variant="default" size="sm" plain @click="testAccount('admin')"> -->
+      <!--            admin -->
+      <!--          </FaButton> -->
+      <!--          <FaButton variant="outline" size="sm" plain @click="testAccount('test')"> -->
+      <!--            test -->
+      <!--          </FaButton> -->
+      <!--        </div> -->
+      <!--      </div> -->
     </div>
   </div>
 </template>
