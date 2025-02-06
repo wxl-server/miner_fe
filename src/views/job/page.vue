@@ -1,12 +1,12 @@
 <route lang="yaml">
 meta:
-  title: 导航2-2-1
+  title: job
 </route>
 
 <template>
   <div>
     <FaPageMain>
-      多级导航2-2-1
+      job
     </FaPageMain>
   </div>
 </template>

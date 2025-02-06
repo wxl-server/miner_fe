@@ -3,7 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import useSettingsStore from '@/store/modules/settings'
 import generatedRoutes from 'virtual:generated-pages'
 import { setupLayouts } from 'virtual:meta-layouts'
-import MultilevelMenuExample from './modules/multilevel.menu.example'
+import Start from './modules/start.ts'
 
 // 固定路由（默认路由）
 const constantRoutes: RouteRecordRaw[] = [
@@ -61,11 +61,11 @@ const systemRoutes: RouteRecordRaw[] = [
 const asyncRoutes: Route.recordMainRaw[] = [
   {
     meta: {
-      title: '演示',
+      title: '开始',
       icon: 'i-uim:box',
     },
     children: [
-      MultilevelMenuExample,
+      Start,
     ],
   },
 ]
