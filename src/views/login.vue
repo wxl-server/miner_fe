@@ -34,8 +34,8 @@ const formType = ref<'login' | 'register' | 'resetPassword'>('login')
   </div>
   <div class="login-box">
     <div class="login-banner">
-      <img src="../assets/images/logo.svg" class="absolute inset-s-4 inset-t-4 h-8 rounded">
-      <img src="@/assets/images/login-banner.png" class="banner">
+      <img src="../assets/images/logo.svg" class="absolute inset-s-4 inset-t-4 h-8 rounded" style="z-index: 1" alt="">
+      <img src="../assets/images/login-banner.png" class="banner" alt="">
     </div>
     <div class="login-form flex-col-center">
       <Transition name="fade" mode="out-in">

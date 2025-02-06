@@ -11,7 +11,7 @@ const routes: RouteRecordRaw = {
   name: 'start',
   meta: {
     title: 'job',
-    icon: 'i-heroicons-solid:menu-alt-3',
+    icon: '/src/assets/icons/job.svg',
   },
   children: [
     {
