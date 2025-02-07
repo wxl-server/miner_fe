@@ -15,13 +15,12 @@ const jobList = {
   pageTotal: 0,
 }
 
-onMounted(() => {
+function QueryJobList() {
   const req = {
     pageNum: jobList.currentPageNum,
     pageSize: jobList.pageSize,
   }
   apiJob.queryJobList(req).then((res) => {
-    console.warn(res.data)
     if (res.data.code !== 0 && res.data.message !== 'success') {
       console.error(res.data.code, res.data.message)
       return
@@ -30,16 +29,24 @@ onMounted(() => {
     jobList.tableData.value = res.data.data.jobList
   }).finally(() => {
   })
+}
+
+onMounted(() => {
+  QueryJobList()
 })
 
 function ToDetail(id: number) {
   currentPageType.value = 'detail'
   console.warn(id)
 }
-function handleSizeChange() {
+function handleSizeChange(val: number) {
+  jobList.pageSize = val
+  QueryJobList()
 }
 
-function handleCurrentChange() {
+function handleCurrentChange(val: number) {
+  jobList.currentPageNum = val
+  QueryJobList()
 }
 </script>
 
