@@ -10,7 +10,7 @@ const routes: RouteRecordRaw = {
   redirect: '/start/job',
   name: 'start',
   meta: {
-    title: 'job',
+    title: '工作',
     icon: '/src/assets/icons/job.svg',
   },
   children: [
@@ -19,7 +19,7 @@ const routes: RouteRecordRaw = {
       name: 'job',
       component: () => import('@/views/job/page.vue'),
       meta: {
-        title: 'job',
+        title: '工作',
         menu: false,
         breadcrumb: false,
       },
