@@ -54,13 +54,13 @@ function handleCurrentChange(val: number) {
   <div>
     <FaPageMain>
       <el-space v-if="currentPageType === 'list'" direction="vertical" alignment="normal">
-        <el-table :data="jobList.tableData.value" style="width: 100%;height: max-content" current-row-key="id">
-          <el-table-column prop="name" label="工作名" width="200" />
-          <el-table-column prop="description" label="描述" width="300" />
-          <el-table-column prop="createdBy" label="创建者" width="300" />
-          <el-table-column prop="createdAt" label="创建时间" width="300" />
-          <el-table-column prop="updatedAt" label="更新时间" width="300" />
-          <el-table-column fixed="right" label="Operations" min-width="100">
+        <el-table :data="jobList.tableData.value" style="width: 100%;max-height: 81vh" current-row-key="id">
+          <el-table-column prop="name" label="工作名" />
+          <el-table-column prop="description" label="描述" />
+          <el-table-column prop="createdBy" label="创建者" />
+          <el-table-column prop="createdAt" label="创建时间" />
+          <el-table-column prop="updatedAt" label="更新时间" />
+          <el-table-column fixed="right" label="Operations">
             <template #default="scope">
               <el-button link type="success" size="small" @click="ToDetail(scope.row.id)">
                 Detail
