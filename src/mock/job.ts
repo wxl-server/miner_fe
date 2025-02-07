@@ -13,8 +13,8 @@ export default defineFakeRoute([
           code: 0,
           message: 'success',
           data: {
-            total: 200,
-            jobList: Array.from({ length: body.pageSize }).fill(0).map(() => ({
+            total: 216,
+            jobList: Array.from({ length: Math.min(body.pageNum * body.pageSize, 216) - (body.pageNum - 1) * body.pageSize }).fill(0).map(() => ({
               id: faker.number.int(),
               name: faker.person.fullName(),
               description: faker.lorem.sentence(),

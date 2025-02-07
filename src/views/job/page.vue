@@ -53,8 +53,8 @@ function handleCurrentChange(val: number) {
 <template>
   <div>
     <FaPageMain>
-      <el-space v-if="currentPageType === 'list'" direction="vertical" alignment="normal">
-        <el-table :data="jobList.tableData.value" style="width: 100%;max-height: 81vh" current-row-key="id">
+      <el-space v-if="currentPageType === 'list'" style="width: 100%" direction="vertical" alignment="normal">
+        <el-table :data="jobList.tableData.value" height="81vh" current-row-key="id" fit>
           <el-table-column prop="name" label="工作名" />
           <el-table-column prop="description" label="描述" />
           <el-table-column prop="createdBy" label="创建者" />
