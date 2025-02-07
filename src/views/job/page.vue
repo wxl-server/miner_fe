@@ -11,7 +11,7 @@ const jobList = {
   currentPageNum: 1,
   pageSizeArray: [10, 50, 100],
   pageSize: 10,
-  tableData: [],
+  tableData: ref([]),
   pageTotal: 0,
 }
 
@@ -27,7 +27,7 @@ onMounted(() => {
       return
     }
     jobList.pageTotal = res.data.data.total
-    jobList.tableData = res.data.data.jobList
+    jobList.tableData.value = res.data.data.jobList
   }).finally(() => {
   })
 })
@@ -47,7 +47,7 @@ function handleCurrentChange() {
   <div>
     <FaPageMain>
       <el-space v-if="currentPageType === 'list'" direction="vertical" alignment="normal">
-        <el-table :data="jobList.tableData" style="width: 100%;height: max-content" current-row-key="id">
+        <el-table :data="jobList.tableData.value" style="width: 100%;height: max-content" current-row-key="id">
           <el-table-column prop="name" label="工作名" width="200" />
           <el-table-column prop="description" label="描述" width="300" />
           <el-table-column prop="createdBy" label="创建者" width="300" />
