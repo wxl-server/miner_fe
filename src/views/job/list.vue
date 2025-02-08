@@ -79,30 +79,35 @@ function handleSortChange(data: { column: any, prop: string, order: any }) {
   }
   queryJobList()
 }
+
+function handleReset() {
+  jobList.nameFilter.value = undefined
+  jobList.createdByFilter.value = undefined
+  jobList.createdAtFilter.value = [undefined, undefined]
+  queryJobList()
+}
 </script>
 
 <template>
   <el-space style="width: 100%" direction="vertical" alignment="normal">
-    <el-space direction="horizontal" alignment="normal" size="large">
+    <el-space style="width: 100%" fill fill-ratio="25" direction="horizontal" alignment="normal" size="large">
       <el-space direction="vertical" alignment="normal">
         <el-text>
           工作名
         </el-text>
         <el-input
           v-model="jobList.nameFilter.value"
-          style="width: 20vw"
           placeholder="工作名"
           clearable
         />
       </el-space>
       <el-space direction="vertical" alignment="normal">
         <el-text>
-          创建者
+          创建人
         </el-text>
         <el-input
           v-model="jobList.createdByFilter.value"
-          style="width: 20vw"
-          placeholder="创建者"
+          placeholder="创建人"
           clearable
         />
       </el-space>
@@ -112,23 +117,27 @@ function handleSortChange(data: { column: any, prop: string, order: any }) {
         </el-text>
         <el-date-picker
           v-model="jobList.createdAtFilter.value"
-          style="width: 25vw"
           type="datetimerange"
           range-separator="-"
           start-placeholder="开始时间"
           end-placeholder="结束时间"
         />
       </el-space>
-      <el-space direction="vertical" alignment="normal">
-        <el-button style="width: 5vw" color="#409fff">
-          查询
-        </el-button>
-      </el-space>
     </el-space>
+    <el-space style="width: 100%" direction="horizontal" alignment="normal" size="small">
+      <el-button style="width: 80px" color="#409fff" @click="queryJobList">
+        查询
+      </el-button>
+      <el-button plain style="width: 80px" color="#409fff" @click="handleReset">
+        重置
+      </el-button>
+    </el-space>
+    <el-space direction="horizontal" alignment="normal" />
     <el-table :data="jobList.tableData.value" height="74vh" current-row-key="id" fit @sort-change="handleSortChange">
       <el-table-column prop="name" label="工作名" />
       <el-table-column prop="description" label="描述" />
-      <el-table-column prop="created_by.email" label="创建者" />
+      <el-table-column prop="created_by.email" label="创建人" />
+      <el-table-column prop="updated_by.email" label="修改人" />
       <el-table-column prop="created_at" label="创建时间" sortable="custom" />
       <el-table-column prop="updated_at" label="更新时间" sortable="custom" />
       <el-table-column fixed="right" label="Action">
