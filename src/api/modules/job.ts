@@ -1,7 +1,7 @@
 import api from '../index'
 
 export default {
-  // 登录
+  // job list
   queryJobList: (data: {
     page_num: number
     page_size: number
@@ -13,6 +13,31 @@ export default {
     created_at_start?: number
     created_at_end?: number
   }) => api.post('job/query/list', data, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem('token'),
+    },
+    baseURL: '/mock/',
+  }),
+  // 删除job
+  deleteJob: (data: {
+    id: number
+  }) => api.post('job/delete', data, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem('token'),
+    },
+    baseURL: '/mock/',
+  }),
+  // 创建job
+  createJob: (data: {
+    name: string
+    description?: string
+  }) => api.post('job/create', data, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem('token'),
+    },
     baseURL: '/mock/',
   }),
 }

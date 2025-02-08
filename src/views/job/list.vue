@@ -5,8 +5,9 @@ title: 工作
 
 <script setup lang="ts">
 import apiJob from '@/api/modules/job'
+import { ElMessage } from 'element-plus'
 
-defineEmits<{
+const emit = defineEmits<{
   toDetail?: (id: number) => void
 }>()
 
@@ -86,11 +87,81 @@ function handleReset() {
   jobList.createdAtFilter.value = [undefined, undefined]
   queryJobList()
 }
+
+function deleteJob(id: number) {
+  const req = {
+    id,
+  }
+  apiJob.deleteJob(req).then((res) => {
+    if (res.data.code !== 0 && res.data.message !== 'success') {
+      console.error(res.data.code, res.data.message)
+    }
+  }).finally(() => {
+    queryJobList()
+  })
+}
+
+const createJobFromVisible = ref(false)
+const form = ref({
+  name: undefined,
+  description: undefined,
+})
+function handleCreate() {
+  createJobFromVisible.value = false
+  const req = {
+    name: form.value.name,
+    description: form.value.description,
+  }
+  apiJob.createJob(req).then((res) => {
+    if (res.data.code !== 0 && res.data.message !== 'success') {
+      console.error(res.data.code, res.data.message)
+      return
+    }
+    emit('toDetail', res.data.data.id)
+  }).finally(() => {
+    form.value.name = undefined
+    form.value.description = undefined
+    ElMessage.success('创建成功！')
+  })
+}
 </script>
 
 <template>
-  <el-space style="width: 100%" direction="vertical" alignment="normal">
-    <el-space style="width: 100%" fill fill-ratio="25" direction="horizontal" alignment="normal" size="large">
+  <el-space style="width: 100%" direction="vertical" alignment="normal" size="large">
+    <el-row>
+      <el-col :span="2">
+        <el-text style="font-size: larger;font-weight: bolder">
+          工作
+        </el-text>
+      </el-col>
+      <el-col :span="20"></el-col>
+      <el-col :span="2">
+        <el-button style="width: 100%" color="#409fff" @click="createJobFromVisible = true">
+          创建
+        </el-button>
+        <el-dialog v-model="createJobFromVisible" title="创建新工作" width="500">
+          <el-form :model="form">
+            <el-form-item label="工作名" label-width="auto" label-position="top" required>
+              <el-input v-model="form.name" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="描述" label-width="auto" label-position="top" size="large">
+              <el-input v-model="form.description" type="textarea" autocomplete="off" />
+            </el-form-item>
+          </el-form>
+          <template #footer>
+            <div class="dialog-footer">
+              <el-button @click="createJobFromVisible = false">
+                取消
+              </el-button>
+              <el-button type="primary" @click="handleCreate">
+                创建
+              </el-button>
+            </div>
+          </template>
+        </el-dialog>
+      </el-col>
+    </el-row>
+    <el-space style="width: 100%" fill :fill-ratio="25" direction="horizontal" alignment="normal" size="large">
       <el-space direction="vertical" alignment="normal">
         <el-text>
           工作名
@@ -133,7 +204,7 @@ function handleReset() {
       </el-button>
     </el-space>
     <el-space direction="horizontal" alignment="normal" />
-    <el-table :data="jobList.tableData.value" height="74vh" current-row-key="id" fit @sort-change="handleSortChange">
+    <el-table :data="jobList.tableData.value" height="62vh" current-row-key="id" fit @sort-change="handleSortChange">
       <el-table-column prop="name" label="工作名" />
       <el-table-column prop="description" label="描述" />
       <el-table-column prop="created_by.email" label="创建人" />
@@ -147,6 +218,15 @@ function handleReset() {
               详情
             </el-text>
           </el-button>
+          <el-popconfirm title="确定删除?" :hide-after="1" @confirm="deleteJob">
+            <template #reference>
+              <el-button style="z-index: 1;margin-left: 0" text size="small">
+                <el-text color="#409fff" size="small">
+                  删除
+                </el-text>
+              </el-button>
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
