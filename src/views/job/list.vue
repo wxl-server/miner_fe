@@ -120,7 +120,7 @@ function handleSortChange(data: { column: any, prop: string, order: any }) {
         />
       </el-space>
     </el-space>
-    <el-table :data="jobList.tableData.value" height="81vh" current-row-key="id" fit @sort-change="handleSortChange">
+    <el-table :data="jobList.tableData.value" height="74vh" current-row-key="id" fit @sort-change="handleSortChange">
       <el-table-column prop="name" label="工作名" />
       <el-table-column prop="description" label="描述" />
       <el-table-column prop="created_by.email" label="创建者" />
