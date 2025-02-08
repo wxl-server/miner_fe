@@ -10,9 +10,11 @@ export default defineFakeRoute([
         error: '',
         status: 1,
         data: {
-          account: body.account,
-          token: `${body.account}:${faker.internet.jwt()}`,
-          avatar: '',
+          code: 0,
+          message: 'success',
+          data: {
+            token: `${body.account}:${faker.internet.jwt()}`,
+          },
         },
       }
     },
