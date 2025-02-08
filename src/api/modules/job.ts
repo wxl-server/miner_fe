@@ -8,8 +8,8 @@ export default {
     order_by?: number
     order?: number
 
-    name?: number
-    created_by?: number
+    name?: string
+    created_by?: string
     created_at_start?: number
     created_at_end?: number
   }) => api.post('job/query/list', data, {

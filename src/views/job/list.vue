@@ -18,10 +18,9 @@ const jobList = {
   pageTotal: 0,
   orderBy: undefined,
   order: undefined,
-  idFilter: undefined,
-  createdByFilter: undefined,
-  createdAtStartFilter: undefined,
-  createdAtEndFilter: undefined,
+  nameFilter: ref(undefined),
+  createdByFilter: ref(undefined),
+  createdAtFilter: ref([undefined, undefined]),
 }
 
 function queryJobList() {
@@ -30,13 +29,12 @@ function queryJobList() {
     page_size: jobList.pageSize,
     order_by: jobList.orderBy,
     order: jobList.order,
-    id: jobList.idFilter,
-    created_by: jobList.createdByFilter,
-    created_at_start: jobList.createdAtStartFilter,
-    created_at_end: jobList.createdAtEndFilter,
+    name: jobList.nameFilter.value === '' ? undefined : jobList.nameFilter.value,
+    created_by: jobList.createdByFilter.value === '' ? undefined : jobList.createdByFilter.value,
+    created_at_start: jobList.createdAtFilter.value === null ? undefined : jobList.createdAtFilter.value[0],
+    created_at_end: jobList.createdAtFilter.value === null ? undefined : jobList.createdAtFilter.value[1],
   }
   apiJob.queryJobList(req).then((res) => {
-    console.warn(res)
     if (res.data.code !== 0 && res.data.message !== 'success') {
       console.error(res.data.code, res.data.message)
       return
@@ -85,6 +83,43 @@ function handleSortChange(data: { column: any, prop: string, order: any }) {
 
 <template>
   <el-space style="width: 100%" direction="vertical" alignment="normal">
+    <el-space direction="horizontal" alignment="normal" size="large">
+      <el-space direction="vertical" alignment="normal">
+        <el-text>
+          工作名
+        </el-text>
+        <el-input
+          v-model="jobList.nameFilter.value"
+          style="width: 20vw"
+          placeholder="工作名"
+          clearable
+        />
+      </el-space>
+      <el-space direction="vertical" alignment="normal">
+        <el-text>
+          创建者
+        </el-text>
+        <el-input
+          v-model="jobList.createdByFilter.value"
+          style="width: 20vw"
+          placeholder="创建者"
+          clearable
+        />
+      </el-space>
+      <el-space direction="vertical" alignment="normal">
+        <el-text>
+          创建时间
+        </el-text>
+        <el-date-picker
+          v-model="jobList.createdAtFilter.value"
+          style="width: 25vw"
+          type="datetimerange"
+          range-separator="-"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+        />
+      </el-space>
+    </el-space>
     <el-table :data="jobList.tableData.value" height="81vh" current-row-key="id" fit @sort-change="handleSortChange">
       <el-table-column prop="name" label="工作名" />
       <el-table-column prop="description" label="描述" />
