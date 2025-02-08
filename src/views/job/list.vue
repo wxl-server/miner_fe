@@ -119,6 +119,11 @@ function handleSortChange(data: { column: any, prop: string, order: any }) {
           end-placeholder="结束时间"
         />
       </el-space>
+      <el-space direction="vertical" alignment="normal">
+        <el-button style="width: 5vw" color="#409fff">
+          查询
+        </el-button>
+      </el-space>
     </el-space>
     <el-table :data="jobList.tableData.value" height="74vh" current-row-key="id" fit @sort-change="handleSortChange">
       <el-table-column prop="name" label="工作名" />
@@ -126,10 +131,12 @@ function handleSortChange(data: { column: any, prop: string, order: any }) {
       <el-table-column prop="created_by.email" label="创建者" />
       <el-table-column prop="created_at" label="创建时间" sortable="custom" />
       <el-table-column prop="updated_at" label="更新时间" sortable="custom" />
-      <el-table-column fixed="right" label="Operations">
+      <el-table-column fixed="right" label="Action">
         <template #default="scope">
-          <el-button link type="success" size="small" @click="$emit('toDetail', scope.row.id)">
-            Detail
+          <el-button style="z-index: 1" text size="small" @click="$emit('toDetail', scope.row.id)">
+            <el-text color="#409fff" size="small">
+              详情
+            </el-text>
           </el-button>
         </template>
       </el-table-column>
