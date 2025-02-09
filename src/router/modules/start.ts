@@ -17,12 +17,22 @@ const routes: RouteRecordRaw = {
     {
       path: 'job',
       name: 'job',
-      component: () => import('@/views/job/page.vue'),
+      component: () => import('@/views/job/list.vue'),
       meta: {
         title: '工作',
         menu: false,
         breadcrumb: false,
       },
+      children: [
+        {
+          path: 'detail',
+          name: 'detail',
+          component: () => import('@/views/job/detail.vue'),
+          meta: {
+            title: '工作详情',
+          },
+        },
+      ],
     },
   ],
 }
