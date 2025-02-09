@@ -120,13 +120,7 @@ async function handleCreate(formEl: FormInstance | undefined) {
           console.error(res.data.code, res.data.message)
           return
         }
-        const router = useRouter()
-        router.push({
-          name: '/start/job/detail',
-          params: {
-            id: res.data.data.id,
-          },
-        })
+        toDetail(res.data.data.id)
       }).finally(() => {
         form.value.name = undefined
         form.value.description = undefined
