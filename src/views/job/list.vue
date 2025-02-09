@@ -124,6 +124,12 @@ function handleCreate() {
     ElMessage.success('创建成功！')
   })
 }
+
+const rules = ref<FormRules<RuleForm>>({
+  name: [
+    { required: true, message: '请输入工作名', trigger: 'blur' },
+  ],
+})
 </script>
 
 <template>
@@ -140,11 +146,11 @@ function handleCreate() {
           创建
         </el-button>
         <el-dialog v-model="createJobFromVisible" title="创建新工作" width="500">
-          <el-form :model="form">
-            <el-form-item label="工作名" label-width="auto" label-position="top" required>
+          <el-form :model="form" :rules="rules">
+            <el-form-item label="工作名" prop="name" label-width="auto" label-position="top">
               <el-input v-model="form.name" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="描述" label-width="auto" label-position="top" size="large">
+            <el-form-item label="描述" prop="description" label-width="auto" label-position="top" size="large">
               <el-input v-model="form.description" type="textarea" autocomplete="off" />
             </el-form-item>
           </el-form>
