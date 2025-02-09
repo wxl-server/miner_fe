@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import apiJob from '@/api/modules/job'
 
-const props = defineProps({
-  id: Number,
-})
-
-const jobID = props.id
-console.warn(props)
+const route = useRoute()
+const jobID = route.query.id
 const job = ref({
   id: 0,
   name: '',

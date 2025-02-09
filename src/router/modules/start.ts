@@ -12,6 +12,7 @@ const routes: RouteRecordRaw = {
   meta: {
     title: '工作',
     icon: '/src/assets/icons/job.svg',
+    breadcrumb: false,
   },
   children: [
     {
@@ -21,15 +22,25 @@ const routes: RouteRecordRaw = {
       meta: {
         title: '工作',
         menu: false,
-        breadcrumb: false,
       },
       children: [
+        {
+          path: 'redirect',
+          name: 'redirect',
+          redirect: '/start/job',
+          component: () => import('@/views/job/list.vue'),
+          meta: {
+            title: 'redirect',
+            menu: false,
+          },
+        },
         {
           path: 'detail',
           name: 'detail',
           component: () => import('@/views/job/detail.vue'),
           meta: {
             title: '工作详情',
+            menu: false,
           },
         },
       ],

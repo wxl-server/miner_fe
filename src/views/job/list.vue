@@ -143,11 +143,11 @@ const rules = ref<FormRules<RuleForm>>({
 })
 const ruleFormRef = ref<FormInstance>()
 
+const router = useRouter()
 function toDetail(id: number) {
-  const router = useRouter()
   router.push({
-    path: '/start/job/detail',
-    params: {
+    name: 'detail',
+    query: {
       id,
     },
   })
