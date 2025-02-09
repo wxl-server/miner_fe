@@ -19,6 +19,16 @@ export default {
     },
     baseURL: '/mock/',
   }),
+  // job detail
+  queryJobDetail: (data: {
+    id: number
+  }) => api.post('job/query/detail', data, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem('token'),
+    },
+    baseURL: '/mock/',
+  }),
   // 删除job
   deleteJob: (data: {
     id: number

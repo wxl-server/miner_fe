@@ -47,6 +47,36 @@ export default defineFakeRoute([
     },
   },
   {
+    url: '/mock/job/query/detail',
+    method: 'post',
+    response: ({ body }) => {
+      return {
+        error: '',
+        status: 1,
+        data: {
+          code: 0,
+          message: 'success',
+          data: {
+            id: body.id,
+            name: faker.person.fullName(),
+            description: faker.lorem.sentence(),
+            created_by: {
+              id: faker.number.int(),
+              email: faker.internet.email(),
+            },
+            updated_by: {
+              id: faker.number.int(),
+              email: faker.internet.email(),
+            },
+            created_at: faker.date.past().getTime(),
+            updated_at: faker.date.past().getTime(),
+            extra: {},
+          },
+        },
+      }
+    },
+  },
+  {
     url: '/mock/job/delete',
     method: 'post',
     // eslint-disable-next-line unused-imports/no-unused-vars
