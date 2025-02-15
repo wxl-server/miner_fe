@@ -31,15 +31,15 @@ export default defineFakeRoute([
               extra: {},
             })).sort((a, b) => {
               if (body.order === undefined && body.order_by === undefined) {
-                return b.createdAt - a.createdAt
+                return b.created_at - a.created_at
               }
               else if (body.order_by === 5) {
-                return body.order === 1 ? a.createdAt - b.createdAt : b.createdAt - a.createdAt
+                return body.order === 1 ? a.created_at - b.created_at : b.created_at - a.created_at
               }
               else if (body.order_by === 6) {
-                return body.order === 1 ? a.updatedAt - b.updatedAt : b.updatedAt - a.updatedAt
+                return body.order === 1 ? a.updated_at - b.updated_at : b.updated_at - a.updated_at
               }
-              return b.createdAt - a.createdAt
+              return b.created_at - a.created_at
             }),
           },
         },
@@ -79,8 +79,7 @@ export default defineFakeRoute([
   {
     url: '/mock/job/delete',
     method: 'post',
-    // eslint-disable-next-line unused-imports/no-unused-vars
-    response: ({ body }) => {
+    response: () => {
       return {
         error: '',
         status: 1,
@@ -94,8 +93,7 @@ export default defineFakeRoute([
   {
     url: '/mock/job/create',
     method: 'post',
-    // eslint-disable-next-line unused-imports/no-unused-vars
-    response: ({ body, headers }) => {
+    response: () => {
       return {
         error: '',
         status: 1,

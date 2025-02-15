@@ -13,30 +13,18 @@ export default {
     created_at_start?: number
     created_at_end?: number
   }) => api.post('job/query/list', data, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': localStorage.getItem('token'),
-    },
     baseURL: '/mock/',
   }),
   // job detail
   queryJobDetail: (data: {
     id: number
   }) => api.post('job/query/detail', data, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': localStorage.getItem('token'),
-    },
     baseURL: '/mock/',
   }),
   // 删除job
   deleteJob: (data: {
     id: number
   }) => api.post('job/delete', data, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': localStorage.getItem('token'),
-    },
     baseURL: '/mock/',
   }),
   // 创建job
@@ -44,10 +32,6 @@ export default {
     name: string
     description?: string
   }) => api.post('job/create', data, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': localStorage.getItem('token'),
-    },
     baseURL: '/mock/',
   }),
 }

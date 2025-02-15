@@ -14,11 +14,11 @@ const jobList = {
   pageSize: 10,
   tableData: ref([]),
   pageTotal: 0,
-  orderBy: undefined,
-  order: undefined,
+  orderBy: -1,
+  order: -1,
   nameFilter: ref(undefined),
   createdByFilter: ref(undefined),
-  createdAtFilter: ref([undefined, undefined]),
+  createdAtFilter: ref([]),
 }
 
 function queryJobList() {
@@ -38,10 +38,11 @@ function queryJobList() {
       return
     }
     jobList.pageTotal = res.data.data.total
-    res.data.data.job_list.forEach((item) => {
+    for (let i = 0; i < res.data.data.job_list.length; i++) {
+      const item = res.data.data.job_list[i]
       item.created_at = new Date(item.created_at).toLocaleString()
       item.updated_at = new Date(item.updated_at).toLocaleString()
-    })
+    }
     jobList.tableData.value = res.data.data.job_list
   }).finally(() => {
   })
@@ -64,16 +65,16 @@ function handleCurrentChange(val: number) {
 function handleSortChange(data: { column: any, prop: string, order: any }) {
   if (data.order !== null) {
     jobList.order = data.order === 'ascending' ? 1 : 0
-    if (data.prop === 'createdAt') {
+    if (data.prop === 'created_at') {
       jobList.orderBy = 5
     }
-    else if (data.prop === 'updatedAt') {
+    else if (data.prop === 'updated_at') {
       jobList.orderBy = 6
     }
   }
   else {
-    jobList.orderBy = undefined
-    jobList.order = undefined
+    jobList.orderBy = -1
+    jobList.order = -1
   }
   queryJobList()
 }
@@ -81,7 +82,7 @@ function handleSortChange(data: { column: any, prop: string, order: any }) {
 function handleReset() {
   jobList.nameFilter.value = undefined
   jobList.createdByFilter.value = undefined
-  jobList.createdAtFilter.value = [undefined, undefined]
+  jobList.createdAtFilter.value = []
   queryJobList()
 }
 
@@ -100,8 +101,8 @@ function deleteJob(id: number) {
 
 const createJobFromVisible = ref(false)
 const form = ref({
-  name: undefined,
-  description: undefined,
+  name: '',
+  description: '',
 })
 
 async function handleCreate(formEl: FormInstance | undefined) {
@@ -122,12 +123,17 @@ async function handleCreate(formEl: FormInstance | undefined) {
         }
         toDetail(res.data.data.id)
       }).finally(() => {
-        form.value.name = undefined
-        form.value.description = undefined
+        form.value.name = ''
+        form.value.description = ''
         ElMessage.success('创建成功！')
       })
     }
   })
+}
+
+interface RuleForm {
+  name: string
+  description: string
 }
 
 const rules = ref<FormRules<RuleForm>>({
@@ -164,7 +170,7 @@ function toDetail(id: number) {
               创建
             </el-button>
             <el-dialog v-model="createJobFromVisible" title="创建新工作" width="500">
-              <el-form :model="form" :rules="rules" ref="ruleFormRef">
+              <el-form ref="ruleFormRef" :model="form" :rules="rules">
                 <el-form-item label="工作名" prop="name" label-width="auto" label-position="top">
                   <el-input v-model="form.name" autocomplete="off" />
                 </el-form-item>
@@ -242,7 +248,7 @@ function toDetail(id: number) {
                   详情
                 </el-text>
               </el-button>
-              <el-popconfirm title="确定删除?" :hide-after="1" @confirm="deleteJob">
+              <el-popconfirm title="确定删除?" :hide-after="1" @confirm="deleteJob(scope.row.id)">
                 <template #reference>
                   <el-button style="z-index: 1;margin-left: 0" text size="small">
                     <el-text color="#409fff" size="small">
