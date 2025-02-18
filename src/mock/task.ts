@@ -40,6 +40,40 @@ export default defineFakeRoute([
               },
               created_at: faker.date.past().getTime(),
               time_cost: faker.number.int({ min: 0, max: 200 }),
+              rules: [
+                {
+                  id: 0,
+                  factor: {
+                    factor_code: 'product_id',
+                  },
+                  operator: {
+                    operator_code: 'in',
+                  },
+                  value_list: ['1234556', '1234568485'],
+                },
+                {
+                  id: 1,
+                  factor: {
+                    factor_code: 'product_name',
+                  },
+                  operator: {
+                    operator_code: 'contain_any',
+                  },
+                  value_list: ['adidas nike apple'],
+                },
+                {
+                  id: 2,
+                  factor: {
+                    factor_code: 'product_status',
+                  },
+                  operator: {
+                    operator_code: 'in',
+                  },
+                  value_list: ['1', '2', '3'],
+                },
+              ],
+              logic_expression: '1&2&3',
+              limit: 20000,
               extra: {},
             })),
           },

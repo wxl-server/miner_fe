@@ -6,6 +6,7 @@ import apiTask from '@/api/modules/task'
 import {
   Delete,
 } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 onMounted(() => {
   queryJobDetail()
@@ -79,25 +80,25 @@ const rules = {
     {
       id: 0,
       factor: {
-        factorCode: '',
+        factor_code: '',
       },
       operator: {
-        operatorCode: '',
+        operator_code: '',
       },
-      valueList: [],
+      value_list: [],
     },
   ]),
-  logicExpression: ref('1'),
+  logic_expression: ref('1'),
   limit: ref(20000),
 }
 
 function handleChangeFactor(ruleID: number) {
-  rules.rules.value[ruleID].operator.operatorCode = ''
-  rules.rules.value[ruleID].valueList = []
+  rules.rules.value[ruleID].operator.operator_code = ''
+  rules.rules.value[ruleID].value_list = []
 }
 
 function handleChangeOperator(ruleID: number) {
-  rules.rules.value[ruleID].valueList = []
+  rules.rules.value[ruleID].value_list = []
 }
 
 const props = {
@@ -112,12 +113,12 @@ function addRule() {
     {
       id: rules.rules.value.length,
       factor: {
-        factorCode: '',
+        factor_code: '',
       },
       operator: {
-        operatorCode: '',
+        operator_code: '',
       },
-      valueList: [],
+      value_list: [],
     },
   )
 }
@@ -130,7 +131,7 @@ function deleteRule(ruleID: number) {
 }
 
 function addLogicSymbol(symbol: string) {
-  rules.logicExpression.value += symbol
+  rules.logic_expression.value += symbol
 }
 
 function resetRules() {
@@ -138,15 +139,15 @@ function resetRules() {
     {
       id: 0,
       factor: {
-        factorCode: '',
+        factor_code: '',
       },
       operator: {
-        operatorCode: '',
+        operator_code: '',
       },
-      valueList: [],
+      value_list: [],
     },
   ]
-  rules.logicExpression.value = '1'
+  rules.logic_expression.value = '1'
   rules.limit.value = 20000
 }
 
@@ -162,21 +163,34 @@ async function applyAndRun(formEl: FormInstance | undefined) {
           return {
             id: rule.id,
             factor: {
-              factor_code: rule.factor.factorCode,
+              factor_code: rule.factor.factor_code,
             },
             operator: {
-              operator_code: rule.operator.operatorCode,
+              operator_code: rule.operator.operator_code,
             },
-            value_list: rule.valueList,
+            value_list: rule.value_list,
           }
         }),
-        logic_expression: rules.logicExpression.value,
+        logic_expression: rules.logic_expression.value,
         limit: rules.limit.value,
       }
       apiTask.applyAndRunTask(req).then((res) => {
         if (res.data.code !== 0 && res.data.message !== 'success') {
           console.error(res.data.code, res.data.message)
+          ElMessage({
+            message: '任务提交失败',
+            type: 'error',
+            duration: 1000,
+            showClose: true,
+          })
         }
+        ElMessage({
+          message: '任务提交成功，正在执行中...',
+          type: 'success',
+          duration: 1000,
+          showClose: true,
+        })
+        queryTaskList()
       })
     }
   })
@@ -186,14 +200,14 @@ interface RuleForm {
   rules: Array<{
     id: number
     factor: {
-      factorCode: string
+      factor_code: string
     }
     operator: {
-      operatorCode: string
+      operator_code: string
     }
-    valueList: Array<string>
+    value_list: Array<string>
   }>
-  logicExpression: string
+  logic_expression: string
   limit: number
 }
 
@@ -201,7 +215,7 @@ const formRules = ref<FormRules<RuleForm>>({
   rules: [
     { validator: validateRules, trigger: 'blur' },
   ],
-  logicExpression: [
+  logic_expression: [
     { validator: validateLogicExpression, trigger: 'blur' },
   ],
   limit: [
@@ -217,11 +231,11 @@ function validateRules(rule: any, value: any, callback: any) {
   else {
     for (let i = 0; i < ruleList.length; i++) {
       const rule = ruleList[i]
-      if (rule.factor.factorCode === ''
-        || rule.factor.factorCode === undefined
-        || rule.operator.operatorCode === ''
-        || rule.operator.operatorCode === undefined
-        || rule.valueList.length === 0) {
+      if (rule.factor.factor_code === ''
+        || rule.factor.factor_code === undefined
+        || rule.operator.operator_code === ''
+        || rule.operator.operator_code === undefined
+        || rule.value_list.length === 0) {
         callback(new Error('规则不完整'))
         return
       }
@@ -320,6 +334,12 @@ function queryTaskList() {
       item.status = item.status === 1 ? '运行中' : item.status === 2 ? '成功' : item.status === 3 ? '失败' : '未知'
     }
     taskList.tableData.value = res.data.data.task_list
+
+    if (res.data.data.task_list.length > 0) {
+      rules.rules.value = res.data.data.task_list[0].rules
+      rules.logic_expression.value = res.data.data.task_list[0].logic_expression
+      rules.limit.value = res.data.data.task_list[0].limit
+    }
   }).finally(() => {
   })
 }
@@ -386,41 +406,41 @@ function toDetail(id: number) {
             prop="rules"
             style="margin-bottom: 8px"
           >
-            <el-cascader v-model="rule.factor.factorCode" :options="indicators" :props="props" placeholder="选择因子" style="width: 20%" clearable :show-all-levels="false" @change="handleChangeFactor(rule.id)" />
-            <el-select v-model="rule.operator.operatorCode" placeholder="选择操作符" style="width: 11%; margin-left: 1%" no-data-text="请先选择因子" clearable @change="handleChangeOperator(rule.id)">
+            <el-cascader v-model="rule.factor.factor_code" :options="indicators" :props="props" placeholder="选择因子" style="width: 20%" clearable :show-all-levels="false" @change="handleChangeFactor(rule.id)" />
+            <el-select v-model="rule.operator.operator_code" placeholder="选择操作符" style="width: 11%; margin-left: 1%" no-data-text="请先选择因子" clearable @change="handleChangeOperator(rule.id)">
               <el-option
-                v-for="item in factor2Operator.get(rule.factor.factorCode)"
+                v-for="item in factor2Operator.get(rule.factor.factor_code)"
                 :key="item.operator_code"
                 :label="item.display_name"
                 :value="item.operator_code"
               />
             </el-select>
             <div
-              v-if="rule.factor.factorCode === ''
-                || rule.factor.factorCode === undefined
-                || factor2Operator2InputType.get(rule.factor.factorCode).get(rule.operator.operatorCode).input_el_type === 'Input'" style="width: 62%; margin-left: 1%"
+              v-if="rule.factor.factor_code === ''
+                || rule.factor.factor_code === undefined
+                || factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).input_el_type === 'Input'" style="width: 62%; margin-left: 1%"
             >
               <el-input
-                v-model="rule.valueList[0]"
+                v-model="rule.value_list[0]"
                 style="width: 100%"
                 placeholder="匹配值"
-                :disabled="rule.factor.factorCode === '' || rule.factor.factorCode === undefined || rule.operator.operatorCode === '' || rule.operator.operatorCode === undefined"
+                :disabled="rule.factor.factor_code === '' || rule.factor.factor_code === undefined || rule.operator.operator_code === '' || rule.operator.operator_code === undefined"
                 clearable
               />
             </div>
-            <div v-else-if="factor2Operator2InputType.get(rule.factor.factorCode).get(rule.operator.operatorCode).input_el_type === 'InputTag'" style="width: 62%; margin-left: 1%">
+            <div v-else-if="factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).input_el_type === 'InputTag'" style="width: 62%; margin-left: 1%">
               <el-input-tag
-                v-model="rule.valueList"
+                v-model="rule.value_list"
                 style="width: 100%"
-                :disabled="rule.factor.factorCode === '' || rule.factor.factorCode === undefined || rule.operator.operatorCode === '' || rule.operator.operatorCode === undefined"
+                :disabled="rule.factor.factor_code === '' || rule.factor.factor_code === undefined || rule.operator.operator_code === '' || rule.operator.operator_code === undefined"
                 clearable
                 placeholder="匹配值"
               />
             </div>
-            <div v-else-if="factor2Operator2InputType.get(rule.factor.factorCode).get(rule.operator.operatorCode).input_el_type === 'Select'" style="width: 62%; margin-left: 1%">
-              <el-select v-model="rule.valueList" placeholder="匹配值" style="width: 100%" clearable multiple>
+            <div v-else-if="factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).input_el_type === 'Select'" style="width: 62%; margin-left: 1%">
+              <el-select v-model="rule.value_list" placeholder="匹配值" style="width: 100%" clearable multiple>
                 <el-option
-                  v-for="allowValue in factor2Operator2InputType.get(rule.factor.factorCode).get(rule.operator.operatorCode).allow_values"
+                  v-for="allowValue in factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).allow_values"
                   :key="allowValue.value"
                   :label="allowValue.display_name"
                   :value="allowValue.value"
@@ -446,11 +466,11 @@ function toDetail(id: number) {
           </div>
           <div style="width: 100%;margin-bottom: 8px">
             <el-form-item
-              prop="logicExpression"
+              prop="logic_expression"
               style="margin-bottom: 8px"
             >
               <el-input
-                v-model="rules.logicExpression.value"
+                v-model="rules.logic_expression.value"
                 style="width: 80%"
                 placeholder="logic expression"
                 clearable
