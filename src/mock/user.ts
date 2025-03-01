@@ -20,23 +20,6 @@ export default defineFakeRoute([
     },
   },
   {
-    url: '/mock/user/signup',
-    method: 'post',
-    response: () => {
-      return {
-        error: '',
-        status: 1,
-        data: {
-          code: 0,
-          message: 'success',
-          data: {
-            id: faker.number.int(),
-          },
-        },
-      }
-    },
-  },
-  {
     url: '/mock/user/permission',
     method: 'get',
     response: ({ headers }) => {

@@ -27,14 +27,14 @@ const useUserStore = defineStore(
 
     // 登录
     async function login(data: {
-      email: string
+      account: string
       password: string
     }) {
       const res = await apiUser.login(data)
-      localStorage.setItem('account', data.email)
+      localStorage.setItem('account', data.account)
       localStorage.setItem('token', res.data.data.token)
       localStorage.setItem('avatar', '')
-      account.value = data.email
+      account.value = data.account
       token.value = res.data.data.token
       avatar.value = ''
     }

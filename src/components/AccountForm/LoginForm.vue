@@ -41,11 +41,7 @@ const form = useForm({
 })
 const onSubmit = form.handleSubmit((values) => {
   loading.value = true
-  const req = {
-    email: values.account,
-    password: values.password,
-  }
-  userStore.login(req).then(() => {
+  userStore.login(values).then(() => {
     if (values.remember) {
       localStorage.setItem('login_account', values.account)
     }
