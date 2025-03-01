@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { FormControl, FormField, FormItem, FormMessage } from '@/ui/shadcn/ui/form'
+import apiUser from '@/api/modules/user.ts'
+import { FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/ui/shadcn/ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import * as z from 'zod'
@@ -39,7 +40,15 @@ const form = useForm({
   },
 })
 const onSubmit = form.handleSubmit((values) => {
+  console.warn(1)
   loading.value = true
+  const req = {
+    email: values.account,
+    password: values.password,
+  }
+  console.warn(req)
+  const res = apiUser.signUp(req)
+  console.warn(res)
   emits('onRegister', values.account)
 })
 </script>
