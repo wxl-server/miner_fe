@@ -6,7 +6,7 @@ export default {
     email: string
     password: string
   }) => api.post('user/login', data, {
-    baseURL: '/mock/',
+    // baseURL: '/mock/',
   }),
   // 注册
   signUp: (data: {
