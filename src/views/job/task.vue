@@ -78,16 +78,20 @@ function queryTaskDetail() {
 
 function queryJobDetail() {
   const req = {
+    page_num: 1,
+    page_size: 1,
     id: task.value.job_id,
   }
-  apiJob.queryJobDetail(req).then((res) => {
+  apiJob.queryJobList(req).then((res) => {
     if (res.data.code !== 0 && res.data.message !== 'success') {
       console.error(res.data.code, res.data.message)
       return
     }
-    res.data.data.created_at = new Date(res.data.data.created_at).toLocaleString()
-    res.data.data.updated_at = new Date(res.data.data.updated_at).toLocaleString()
-    job.value = res.data.data
+    if (res.data.data.total > 0) {
+      res.data.data.created_at = new Date(res.data.data.created_at).toLocaleString()
+      res.data.data.updated_at = new Date(res.data.data.updated_at).toLocaleString()
+    }
+    job.value = res.data.data.job_list[0]
   }).finally(() => {
   })
 }

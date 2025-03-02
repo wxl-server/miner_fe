@@ -28,16 +28,20 @@ const job = ref({
 
 function queryJobDetail() {
   const req = {
+    page_num: 1,
+    page_size: 1,
     id: jobID,
   }
-  apiJob.queryJobDetail(req).then((res) => {
+  apiJob.queryJobList(req).then((res) => {
     if (res.data.code !== 0 && res.data.message !== 'success') {
       console.error(res.data.code, res.data.message)
       return
     }
-    res.data.data.created_at = new Date(res.data.data.created_at).toLocaleString()
-    res.data.data.updated_at = new Date(res.data.data.updated_at).toLocaleString()
-    job.value = res.data.data
+    if (res.data.data.total > 0) {
+      res.data.data.job_list[0].created_at = new Date(res.data.data.job_list[0].created_at * 1000).toLocaleString()
+      res.data.data.job_list[0].updated_at = new Date(res.data.data.job_list[0].updated_at * 1000).toLocaleString()
+    }
+    job.value = res.data.data.job_list[0]
   }).finally(() => {
   })
 }
@@ -59,7 +63,7 @@ function queryIndicatorList() {
           const allowOperator = factor.allow_operators[k]
           factor2Operator2InputType.set(factor.factor_code, new Map<any, any>([
             [allowOperator.operator_code, {
-              input_el_type: allowOperator.input_el_type,
+              input_el_type: allowOperator.input_el_type === 1 ? 'InputTag' : allowOperator.input_el_type === 2 ? 'Input' : allowOperator.input_el_type === 3 ? 'Select' : 'Input',
               allow_values: allowOperator.allow_values,
             }],
             ['', {
@@ -162,19 +166,15 @@ async function applyAndRun(formEl: FormInstance | undefined) {
         rules: rules.rules.value.map((rule) => {
           return {
             id: rule.id,
-            factor: {
-              factor_code: rule.factor.factor_code,
-            },
-            operator: {
-              operator_code: rule.operator.operator_code,
-            },
+            factor_code: rule.factor.factor_code,
+            operator_code: rule.operator.operator_code,
             value_list: rule.value_list,
           }
         }),
         logic_expression: rules.logic_expression.value,
         limit: rules.limit.value,
       }
-      apiTask.applyAndRunTask(req).then((res) => {
+      apiTask.runTask(req).then((res) => {
         if (res.data.code !== 0 && res.data.message !== 'success') {
           console.error(res.data.code, res.data.message)
           ElMessage({
@@ -535,7 +535,7 @@ function toDetail(id: number) {
         <el-table :data="taskList.tableData.value" height="53vh" current-row-key="id" fit>
           <el-table-column prop="name" label="任务名/id" />
           <el-table-column prop="total_records" label="结果数量" />
-          <el-table-column prop="status" label="状态" >
+          <el-table-column prop="status" label="状态">
             <template #default="scope">
               <el-text :type="scope.row.status === '运行中' ? 'warning' : scope.row.status === '成功' ? 'success' : scope.row.status === '失败' ? 'danger' : 'primary'">
                 {{ scope.row.status }}
