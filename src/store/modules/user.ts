@@ -1,5 +1,6 @@
 import apiUser from '@/api/modules/user'
 import router from '@/router'
+import { ElMessage } from 'element-plus'
 import useMenuStore from './menu'
 import useRouteStore from './route'
 import useSettingsStore from './settings'
@@ -31,12 +32,29 @@ const useUserStore = defineStore(
       password: string
     }) {
       const res = await apiUser.login(data)
-      localStorage.setItem('account', data.email)
-      localStorage.setItem('token', res.data.data.token)
-      localStorage.setItem('avatar', '')
-      account.value = data.email
-      token.value = res.data.data.token
-      avatar.value = ''
+      if (res.data.code !== 0 && res.data.message !== 'success') {
+        console.error(res)
+        ElMessage({
+          message: `登陆失败：${res.data.message}`,
+          type: 'error',
+          duration: 1000,
+          showClose: true,
+        })
+      }
+      else {
+        ElMessage({
+          message: `登陆成功`,
+          type: 'success',
+          duration: 1000,
+          showClose: true,
+        })
+        localStorage.setItem('account', data.email)
+        localStorage.setItem('token', res.data.data.token)
+        localStorage.setItem('avatar', '')
+        account.value = data.email
+        token.value = res.data.data.token
+        avatar.value = ''
+      }
     }
 
     // 手动登出

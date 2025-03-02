@@ -2,22 +2,18 @@ import api from '../index'
 
 export default {
   // 提交task
-  applyAndRunTask: (data: {
+  runTask: (data: {
     job_id: number
     rules: Array<{
       id: number
-      factor: {
-        factor_code: string
-      }
-      operator: {
-        operator_code: string
-      }
+      factor_code: string
+      operator_code: string
       value_list: Array<string>
     }>
     logic_expression: string
     limit: number
-  }) => api.post('task/apply_and_run', data, {
-    baseURL: '/mock/',
+  }) => api.post('task/run', data, {
+    // baseURL: '/mock/',
   }),
   // task list
   queryTaskList: (data: {

@@ -3,7 +3,7 @@ import { defineFakeRoute } from 'vite-plugin-fake-server/client'
 
 export default defineFakeRoute([
   {
-    url: '/mock/task/apply_and_run',
+    url: '/mock/task/run',
     method: 'post',
     response: () => {
       return {

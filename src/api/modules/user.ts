@@ -15,6 +15,10 @@ export default {
   }) => api.post('user/signup', data, {
     // baseURL: '/mock/',
   }),
+  // user list
+  queryUserList: () => api.get('user/query/list', {
+    // baseURL: '/mock/',
+  }),
 
   // 获取权限
   permission: () => api.get('user/permission', {
