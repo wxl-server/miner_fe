@@ -6,6 +6,7 @@ title: 工作
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
 import apiJob from '@/api/modules/job'
+import apiUser from '@/api/modules/user'
 import { ElMessage } from 'element-plus'
 
 const jobList = {
@@ -28,7 +29,7 @@ function queryJobList() {
     order_by: jobList.orderBy,
     order: jobList.order,
     name: jobList.nameFilter.value === '' ? undefined : jobList.nameFilter.value,
-    created_by: jobList.createdByFilter.value === '' ? undefined : jobList.createdByFilter.value,
+    created_by: jobList.createdByFilter.value === null ? undefined : jobList.createdByFilter.value,
     created_at_start: jobList.createdAtFilter.value === null ? undefined : jobList.createdAtFilter.value[0],
     created_at_end: jobList.createdAtFilter.value === null ? undefined : jobList.createdAtFilter.value[1],
   }
@@ -38,17 +39,46 @@ function queryJobList() {
       return
     }
     jobList.pageTotal = res.data.data.total
-    for (let i = 0; i < res.data.data.job_list.length; i++) {
-      const item = res.data.data.job_list[i]
-      item.created_at = new Date(item.created_at).toLocaleString()
-      item.updated_at = new Date(item.updated_at).toLocaleString()
+    if (res.data.data.total > 0) {
+      for (let i = 0; i < res.data.data.job_list.length; i++) {
+        const item = res.data.data.job_list[i]
+        item.created_at = new Date(item.created_at * 1000).toLocaleString()
+        item.updated_at = new Date(item.updated_at * 1000).toLocaleString()
+      }
+      jobList.tableData.value = res.data.data.job_list
     }
-    jobList.tableData.value = res.data.data.job_list
+    else {
+      jobList.tableData.value = []
+    }
+  }).finally(() => {
+  })
+}
+
+const jobOwners = ref([{
+  label: 'none',
+  value: -1,
+}])
+
+function queryJobOwners() {
+  apiUser.queryUserList().then((res) => {
+    if (res.data.code !== 0 && res.data.message !== 'success') {
+      console.error(res.data.code, res.data.message)
+      return
+    }
+    jobOwners.value = []
+    for (let i = 0; i < res.data.data.user_list.length; i++) {
+      const item = res.data.data.user_list[i]
+      jobOwners.value.push({
+        label: item.email,
+        value: item.id,
+      })
+    }
   }).finally(() => {
   })
 }
 
 onMounted(() => {
+  queryJobOwners()
   queryJobList()
 })
 
@@ -93,8 +123,10 @@ function deleteJob(id: number) {
   apiJob.deleteJob(req).then((res) => {
     if (res.data.code !== 0 && res.data.message !== 'success') {
       console.error(res.data.code, res.data.message)
+      ElMessage.error('删除失败！')
     }
   }).finally(() => {
+    ElMessage.success('删除成功！')
     queryJobList()
   })
 }
@@ -157,16 +189,16 @@ function toDetail(id: number) {
 <template>
   <div>
     <FaPageMain>
-      <el-space style="width: 100%" direction="vertical" alignment="normal" size="large">
+      <el-space style="width: 100%;" direction="vertical" alignment="normal" size="large">
         <el-row>
           <el-col :span="2">
-            <el-text style="font-size: larger;font-weight: bolder">
+            <el-text style="font-size: larger;font-weight: bolder;">
               工作
             </el-text>
           </el-col>
-          <el-col :span="20"></el-col>
+          <el-col :span="20" />
           <el-col :span="2">
-            <el-button style="width: 100%" color="#409fff" @click="createJobFromVisible = true">
+            <el-button style="width: 100%;" color="#409fff" @click="createJobFromVisible = true">
               创建
             </el-button>
             <el-dialog v-model="createJobFromVisible" title="创建新工作" width="500">
@@ -191,7 +223,7 @@ function toDetail(id: number) {
             </el-dialog>
           </el-col>
         </el-row>
-        <el-space style="width: 100%" fill :fill-ratio="25" direction="horizontal" alignment="normal" size="large">
+        <el-space style="width: 100%;" fill :fill-ratio="25" direction="horizontal" alignment="normal" size="large">
           <el-space direction="vertical" alignment="normal">
             <el-text>
               工作名
@@ -206,11 +238,18 @@ function toDetail(id: number) {
             <el-text>
               创建人
             </el-text>
-            <el-input
+            <el-select
               v-model="jobList.createdByFilter.value"
               placeholder="创建人"
               clearable
-            />
+            >
+              <el-option
+                v-for="item in jobOwners"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-space>
           <el-space direction="vertical" alignment="normal">
             <el-text>
@@ -225,11 +264,11 @@ function toDetail(id: number) {
             />
           </el-space>
         </el-space>
-        <el-space style="width: 100%" direction="horizontal" alignment="normal" size="small">
-          <el-button style="width: 80px" color="#409fff" @click="queryJobList">
+        <el-space style="width: 100%;" direction="horizontal" alignment="normal" size="small">
+          <el-button style="width: 80px;" color="#409fff" @click="queryJobList">
             查询
           </el-button>
-          <el-button plain style="width: 80px" color="#409fff" @click="handleReset">
+          <el-button plain style="width: 80px;" color="#409fff" @click="handleReset">
             重置
           </el-button>
         </el-space>
@@ -243,14 +282,14 @@ function toDetail(id: number) {
           <el-table-column prop="updated_at" label="更新时间" sortable="custom" />
           <el-table-column fixed="right" label="Action">
             <template #default="scope">
-              <el-button style="z-index: 1" text size="small" @click="toDetail(scope.row.id)">
+              <el-button style="z-index: 1;" text size="small" @click="toDetail(scope.row.id)">
                 <el-text color="#409fff" size="small">
                   详情
                 </el-text>
               </el-button>
               <el-popconfirm title="确定删除?" :hide-after="1" @confirm="deleteJob(scope.row.id)">
                 <template #reference>
-                  <el-button style="z-index: 1;margin-left: 0" text size="small">
+                  <el-button style="z-index: 1;margin-left: 0;" text size="small">
                     <el-text color="#409fff" size="small">
                       删除
                     </el-text>
