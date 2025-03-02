@@ -13,7 +13,7 @@ export default {
     email: string
     password: string
   }) => api.post('user/signup', data, {
-    baseURL: '/mock/',
+    // baseURL: '/mock/',
   }),
 
   // 获取权限

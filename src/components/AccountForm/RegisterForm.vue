@@ -2,6 +2,7 @@
 import apiUser from '@/api/modules/user.ts'
 import { FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/ui/shadcn/ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
+import { ElMessage } from 'element-plus'
 import { useForm } from 'vee-validate'
 import * as z from 'zod'
 
@@ -24,7 +25,6 @@ const form = useForm({
   validationSchema: toTypedSchema(
     z.object({
       account: z.string().min(1, '请输入邮箱').email('请输入合法邮箱'),
-      captcha: z.string().min(6, '请输入验证码'),
       password: z.string().min(1, '请输入密码').min(6, '密码长度为6到18位').max(18, '密码长度为6到18位'),
       checkPassword: z.string().min(1, '请再次输入密码'),
     }).refine(data => data.password === data.checkPassword, {
@@ -34,22 +34,37 @@ const form = useForm({
   ),
   initialValues: {
     account: props.account ?? '',
-    captcha: '',
     password: '',
     checkPassword: '',
   },
 })
 const onSubmit = form.handleSubmit((values) => {
-  console.warn(1)
   loading.value = true
   const req = {
     email: values.account,
     password: values.password,
   }
-  console.warn(req)
-  const res = apiUser.signUp(req)
-  console.warn(res)
-  emits('onRegister', values.account)
+  apiUser.signUp(req).then((res) => {
+    if (res.data.code !== 0 && res.data.message !== 'success') {
+      console.error(res)
+      ElMessage({
+        message: `注册失败：${res.data.message}`,
+        type: 'error',
+        duration: 1000,
+        showClose: true,
+      })
+    }
+    else {
+      ElMessage({
+        message: `注册成功！`,
+        type: 'success',
+        duration: 1000,
+        showClose: true,
+      })
+      emits('onRegister', values.account)
+    }
+    loading.value = false
+  })
 })
 </script>
 

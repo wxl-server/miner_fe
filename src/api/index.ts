@@ -42,13 +42,13 @@ api.interceptors.response.use(
         toast.warning('Warning', {
           description: response.data.error,
         })
-        return Promise.reject(response.data)
+        return Promise.reject(response)
       }
     }
     else {
       useUserStore().requestLogout()
     }
-    return Promise.resolve(response.data)
+    return Promise.resolve(response)
   },
   (error) => {
     if (error.status === 401) {
