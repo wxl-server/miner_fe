@@ -83,12 +83,8 @@ const rules = {
   rules: ref([
     {
       id: 0,
-      factor: {
-        factor_code: '',
-      },
-      operator: {
-        operator_code: '',
-      },
+      factor_code: '',
+      operator_code: '',
       value_list: [],
     },
   ]),
@@ -97,7 +93,7 @@ const rules = {
 }
 
 function handleChangeFactor(ruleID: number) {
-  rules.rules.value[ruleID].operator.operator_code = ''
+  rules.rules.value[ruleID].operator_code = ''
   rules.rules.value[ruleID].value_list = []
 }
 
@@ -116,12 +112,8 @@ function addRule() {
   rules.rules.value.push(
     {
       id: rules.rules.value.length,
-      factor: {
-        factor_code: '',
-      },
-      operator: {
-        operator_code: '',
-      },
+      factor_code: '',
+      operator_code: '',
       value_list: [],
     },
   )
@@ -142,12 +134,8 @@ function resetRules() {
   rules.rules.value = [
     {
       id: 0,
-      factor: {
-        factor_code: '',
-      },
-      operator: {
-        operator_code: '',
-      },
+      factor_code: '',
+      operator_code: '',
       value_list: [],
     },
   ]
@@ -166,8 +154,8 @@ async function applyAndRun(formEl: FormInstance | undefined) {
         rules: rules.rules.value.map((rule) => {
           return {
             id: rule.id,
-            factor_code: rule.factor.factor_code,
-            operator_code: rule.operator.operator_code,
+            factor_code: rule.factor_code,
+            operator_code: rule.operator_code,
             value_list: rule.value_list,
           }
         }),
@@ -199,12 +187,8 @@ async function applyAndRun(formEl: FormInstance | undefined) {
 interface RuleForm {
   rules: Array<{
     id: number
-    factor: {
-      factor_code: string
-    }
-    operator: {
-      operator_code: string
-    }
+    factor_code: string
+    operator_code: string
     value_list: Array<string>
   }>
   logic_expression: string
@@ -231,10 +215,10 @@ function validateRules(rule: any, value: any, callback: any) {
   else {
     for (let i = 0; i < ruleList.length; i++) {
       const rule = ruleList[i]
-      if (rule.factor.factor_code === ''
-        || rule.factor.factor_code === undefined
-        || rule.operator.operator_code === ''
-        || rule.operator.operator_code === undefined
+      if (rule.factor_code === ''
+        || rule.factor_code === undefined
+        || rule.operator_code === ''
+        || rule.operator_code === undefined
         || rule.value_list.length === 0) {
         callback(new Error('规则不完整'))
         return
@@ -329,10 +313,11 @@ function queryTaskList() {
     taskList.pageTotal = res.data.data.total
     for (let i = 0; i < res.data.data.task_list.length; i++) {
       const item = res.data.data.task_list[i]
-      item.created_at = new Date(item.created_at).toLocaleString()
+      item.created_at = new Date(item.created_at * 1000).toLocaleString()
       item.time_cost = `${item.time_cost}s`
       item.status = item.status === 1 ? '运行中' : item.status === 2 ? '成功' : item.status === 3 ? '失败' : '未知'
     }
+    console.warn(res.data.data.task_list)
     taskList.tableData.value = res.data.data.task_list
 
     if (res.data.data.task_list.length > 0) {
@@ -406,41 +391,41 @@ function toDetail(id: number) {
             prop="rules"
             style="margin-bottom: 8px"
           >
-            <el-cascader v-model="rule.factor.factor_code" :options="indicators" :props="props" placeholder="选择因子" style="width: 20%" clearable :show-all-levels="false" @change="handleChangeFactor(rule.id)" />
-            <el-select v-model="rule.operator.operator_code" placeholder="选择操作符" style="width: 11%; margin-left: 1%" no-data-text="请先选择因子" clearable @change="handleChangeOperator(rule.id)">
+            <el-cascader v-model="rule.factor_code" :options="indicators" :props="props" placeholder="选择因子" style="width: 20%" clearable :show-all-levels="false" @change="handleChangeFactor(rule.id)" />
+            <el-select v-model="rule.operator_code" placeholder="选择操作符" style="width: 11%; margin-left: 1%" no-data-text="请先选择因子" clearable @change="handleChangeOperator(rule.id)">
               <el-option
-                v-for="item in factor2Operator.get(rule.factor.factor_code)"
+                v-for="item in factor2Operator.get(rule.factor_code)"
                 :key="item.operator_code"
                 :label="item.display_name"
                 :value="item.operator_code"
               />
             </el-select>
             <div
-              v-if="rule.factor.factor_code === ''
-                || rule.factor.factor_code === undefined
-                || factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).input_el_type === 'Input'" style="width: 62%; margin-left: 1%"
+              v-if="rule.factor_code === ''
+                || rule.factor_code === undefined
+                || factor2Operator2InputType.get(rule.factor_code).get(rule.operator_code).input_el_type === 'Input'" style="width: 62%; margin-left: 1%"
             >
               <el-input
                 v-model="rule.value_list[0]"
                 style="width: 100%"
                 placeholder="匹配值"
-                :disabled="rule.factor.factor_code === '' || rule.factor.factor_code === undefined || rule.operator.operator_code === '' || rule.operator.operator_code === undefined"
+                :disabled="rule.factor_code === '' || rule.factor_code === undefined || rule.operator_code === '' || rule.operator_code === undefined"
                 clearable
               />
             </div>
-            <div v-else-if="factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).input_el_type === 'InputTag'" style="width: 62%; margin-left: 1%">
+            <div v-else-if="factor2Operator2InputType.get(rule.factor_code).get(rule.operator_code).input_el_type === 'InputTag'" style="width: 62%; margin-left: 1%">
               <el-input-tag
                 v-model="rule.value_list"
                 style="width: 100%"
-                :disabled="rule.factor.factor_code === '' || rule.factor.factor_code === undefined || rule.operator.operator_code === '' || rule.operator.operator_code === undefined"
+                :disabled="rule.factor_code === '' || rule.factor_code === undefined || rule.operator_code === '' || rule.operator_code === undefined"
                 clearable
                 placeholder="匹配值"
               />
             </div>
-            <div v-else-if="factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).input_el_type === 'Select'" style="width: 62%; margin-left: 1%">
+            <div v-else-if="factor2Operator2InputType.get(rule.factor_code).get(rule.operator_code).input_el_type === 'Select'" style="width: 62%; margin-left: 1%">
               <el-select v-model="rule.value_list" placeholder="匹配值" style="width: 100%" clearable multiple>
                 <el-option
-                  v-for="allowValue in factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).allow_values"
+                  v-for="allowValue in factor2Operator2InputType.get(rule.factor_code).get(rule.operator_code).allow_values"
                   :key="allowValue.value"
                   :label="allowValue.display_name"
                   :value="allowValue.value"
@@ -533,8 +518,25 @@ function toDetail(id: number) {
           运行结果
         </el-text>
         <el-table :data="taskList.tableData.value" height="53vh" current-row-key="id" fit>
-          <el-table-column prop="name" label="任务名/id" />
-          <el-table-column prop="total_records" label="结果数量" />
+          <el-table-column prop="name" label="任务名/id">
+            <template #default="scope">
+              <el-space style="width: 100%" direction="vertical" alignment="normal">
+                <el-text style="font-size: xx-small;font-weight: bolder">
+                  {{ scope.row.name }}
+                </el-text>
+                <el-text style="font-size: xx-small;font-weight: lighter">
+                  id: {{ scope.row.id }}
+                </el-text>
+              </el-space>
+            </template>
+          </el-table-column>
+          <el-table-column prop="total_records" label="结果数量">
+            <template #default="scope">
+              <el-text>
+                {{ scope.row.status === '运行中' ? '-' : scope.row.total_records }}
+              </el-text>
+            </template>
+          </el-table-column>
           <el-table-column prop="status" label="状态">
             <template #default="scope">
               <el-text :type="scope.row.status === '运行中' ? 'warning' : scope.row.status === '成功' ? 'success' : scope.row.status === '失败' ? 'danger' : 'primary'">
@@ -544,7 +546,13 @@ function toDetail(id: number) {
           </el-table-column>
           <el-table-column prop="created_by.email" label="创建人" />
           <el-table-column prop="created_at" label="创建时间" />
-          <el-table-column prop="time_cost" label="用时" />
+          <el-table-column prop="time_cost" label="用时">
+            <template #default="scope">
+              <el-text>
+                {{ scope.row.status === '运行中' ? '-' : scope.row.time_cost }}
+              </el-text>
+            </template>
+          </el-table-column>
           <el-table-column fixed="right" label="Action">
             <template #default="scope">
               <el-button style="z-index: 1" text size="small" @click="toDetail(scope.row.id)">
