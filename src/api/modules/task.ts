@@ -21,7 +21,7 @@ export default {
     page_size: number
     job_id: number
   }) => api.post('task/query/list', data, {
-    baseURL: '/mock/',
+    // baseURL: '/mock/',
   }),
   // job detail
   queryTaskDetail: (data: {
