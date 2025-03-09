@@ -62,7 +62,7 @@ const asyncRoutes: Route.recordMainRaw[] = [
   {
     meta: {
       title: '开始',
-      icon: '/src/assets/icons/start.svg',
+      icon: '../public/start.svg',
     },
     children: [
       Start,

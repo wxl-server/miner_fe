@@ -11,7 +11,7 @@ const routes: RouteRecordRaw = {
   name: 'start',
   meta: {
     title: '工作',
-    icon: '/src/assets/icons/job.svg',
+    icon: '../public/job.svg',
     breadcrumb: false,
     menu: false,
   },
