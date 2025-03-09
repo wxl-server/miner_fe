@@ -316,10 +316,13 @@ function queryTaskList() {
       item.created_at = new Date(item.created_at * 1000).toLocaleString()
       item.time_cost = `${item.time_cost}s`
       item.status = item.status === 1 ? '运行中' : item.status === 2 ? '成功' : item.status === 3 ? '失败' : '未知'
+      if (item.rules !== undefined) {
+        for (let j = 0; j < item.rules.length; j++) {
+          item.rules[j].id -= 1
+        }
+      }
     }
-    console.warn(res.data.data.task_list)
     taskList.tableData.value = res.data.data.task_list
-
     if (res.data.data.task_list.length > 0) {
       rules.rules.value = res.data.data.task_list[0].rules
       rules.logic_expression.value = res.data.data.task_list[0].logic_expression

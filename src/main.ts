@@ -5,11 +5,13 @@ import icons from '@/iconify/index.json'
 // 自定义指令
 import directive from '@/utils/directive'
 
-import App from './App.vue'
+import ElementPlus from 'element-plus'
 
+import App from './App.vue'
 import router from './router'
 import pinia from './store'
 import uiProvider from './ui/provider'
+import 'element-plus/dist/index.css'
 
 import '@/utils/systemCopyright'
 
@@ -24,6 +26,7 @@ const app = createApp(App)
 app.use(pinia)
 app.use(router)
 app.use(uiProvider)
+app.use(ElementPlus)
 directive(app)
 if (icons.isOfflineUse) {
   for (const info of icons.collections) {

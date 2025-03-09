@@ -19,22 +19,17 @@ export default {
   queryTaskList: (data: {
     page_num: number
     page_size: number
-    job_id: number
+    task_id?: number
+    job_id?: number
   }) => api.post('task/query/list', data, {
     // baseURL: '/mock/',
   }),
-  // job detail
-  queryTaskDetail: (data: {
-    id: number
-  }) => api.post('task/query/detail', data, {
-    baseURL: '/mock/',
-  }),
   // task result
-  queryTaskResult: (data: {
+  queryTaskResultList: (data: {
     page_num: number
     page_size: number
     task_id: number
-  }) => api.post('task/query/result', data, {
-    baseURL: '/mock/',
+  }) => api.post('task_result/query/list', data, {
+    // baseURL: '/mock/',
   }),
 }

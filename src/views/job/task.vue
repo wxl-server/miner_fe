@@ -42,12 +42,8 @@ const rules = {
   rules: ref([
     {
       id: 0,
-      factor: {
-        factor_code: '',
-      },
-      operator: {
-        operator_code: '',
-      },
+      factor_code: '',
+      operator_code: '',
       value_list: [],
     },
   ]),
@@ -57,19 +53,30 @@ const rules = {
 
 function queryTaskDetail() {
   const req = {
+    page_num: 1,
+    page_size: 1,
     id: taskID,
   }
-  apiTask.queryTaskDetail(req).then((res) => {
+  apiTask.queryTaskList(req).then((res) => {
     if (res.data.code !== 0 && res.data.message !== 'success') {
       console.error(res.data.code, res.data.message)
       return
     }
-    res.data.data.created_at = new Date(res.data.data.created_at).toLocaleString()
-    res.data.data.updated_at = new Date(res.data.data.updated_at).toLocaleString()
-    task.value = res.data.data
-    rules.rules.value = res.data.data.rules
-    rules.logic_expression.value = res.data.data.logic_expression
-    rules.limit.value = res.data.data.limit
+    if (res.data.data.total !== 0) {
+      for (let i = 0; i < res.data.data.task_list.length; i++) {
+        const item = res.data.data.task_list[i]
+        item.created_at = new Date(item.created_at * 1000).toLocaleString()
+        item.time_cost = `${item.time_cost}s`
+        for (let j = 0; j < item.rules.length; j++) {
+          item.rules[j].id -= 1
+        }
+      }
+      const item = res.data.data.task_list[0]
+      task.value = item
+      rules.rules.value = item.rules
+      rules.logic_expression.value = item.logic_expression
+      rules.limit.value = item.limit
+    }
   }).finally(() => {
     queryJobDetail()
     queryTaskResult()
@@ -90,8 +97,8 @@ function queryJobDetail() {
     if (res.data.data.total > 0) {
       res.data.data.created_at = new Date(res.data.data.created_at).toLocaleString()
       res.data.data.updated_at = new Date(res.data.data.updated_at).toLocaleString()
+      job.value = res.data.data.job_list[0]
     }
-    job.value = res.data.data.job_list[0]
   }).finally(() => {
   })
 }
@@ -99,12 +106,8 @@ function queryJobDetail() {
 interface RuleForm {
   rules: Array<{
     id: number
-    factor: {
-      factor_code: string
-    }
-    operator: {
-      operator_code: string
-    }
+    factor_code: string
+    operator_code: string
     value_list: Array<string>
   }>
   logic_expression: string
@@ -132,10 +135,10 @@ function validateRules(rule: any, value: any, callback: any) {
   else {
     for (let i = 0; i < ruleList.length; i++) {
       const rule = ruleList[i]
-      if (rule.factor.factor_code === ''
-        || rule.factor.factor_code === undefined
-        || rule.operator.operator_code === ''
-        || rule.operator.operator_code === undefined
+      if (rule.factor_code === ''
+        || rule.factor_code === undefined
+        || rule.operator_code === ''
+        || rule.operator_code === undefined
         || rule.value_list.length === 0) {
         callback(new Error('规则不完整'))
         return
@@ -216,7 +219,7 @@ function queryIndicatorList() {
           const allowOperator = factor.allow_operators[k]
           factor2Operator2InputType.set(factor.factor_code, new Map<any, any>([
             [allowOperator.operator_code, {
-              input_el_type: allowOperator.input_el_type,
+              input_el_type: allowOperator.input_el_type === 1 ? 'InputTag' : allowOperator.input_el_type === 2 ? 'Input' : allowOperator.input_el_type === 3 ? 'Select' : 'Input',
               allow_values: allowOperator.allow_values,
             }],
             ['', {
@@ -233,7 +236,7 @@ function queryIndicatorList() {
 }
 
 function handleChangeFactor(ruleID: number) {
-  rules.rules.value[ruleID].operator.operator_code = ''
+  rules.rules.value[ruleID].operator_code = ''
   rules.rules.value[ruleID].value_list = []
 }
 
@@ -252,12 +255,8 @@ function addRule() {
   rules.rules.value.push(
     {
       id: rules.rules.value.length,
-      factor: {
-        factor_code: '',
-      },
-      operator: {
-        operator_code: '',
-      },
+      factor_code: '',
+      operator_code: '',
       value_list: [],
     },
   )
@@ -298,13 +297,20 @@ function queryTaskResult() {
     page_size: productList.pageSize,
     task_id: taskID,
   }
-  apiTask.queryTaskResult(req).then((res) => {
+  apiTask.queryTaskResultList(req).then((res) => {
     if (res.data.code !== 0 && res.data.message !== 'success') {
       console.error(res.data.code, res.data.message)
       return
     }
     productList.pageTotal = res.data.data.total
-    productList.tableData.value = res.data.data.product_list
+    if (res.data.data.total > 0) {
+      for (let i = 0; i < res.data.data.task_result_list.length; i++) {
+        const esScore = res.data.data.task_result_list[i].es_score
+        res.data.data.task_result_list[i] = res.data.data.task_result_list[i].product
+        res.data.data.task_result_list[i].es_score = esScore
+      }
+    }
+    productList.tableData.value = res.data.data.task_result_list
   }).finally(() => {
   })
 }
@@ -379,41 +385,41 @@ function queryTaskResult() {
             prop="rules"
             style="margin-bottom: 8px"
           >
-            <el-cascader v-model="rule.factor.factor_code" :options="indicators" :props="props" placeholder="选择因子" style="width: 20%" clearable :show-all-levels="false" @change="handleChangeFactor(rule.id)" />
-            <el-select v-model="rule.operator.operator_code" placeholder="选择操作符" style="width: 11%; margin-left: 1%" no-data-text="请先选择因子" clearable @change="handleChangeOperator(rule.id)">
+            <el-cascader v-model="rule.factor_code" :options="indicators" :props="props" placeholder="选择因子" style="width: 20%" clearable :show-all-levels="false" @change="handleChangeFactor(rule.id)" />
+            <el-select v-model="rule.operator_code" placeholder="选择操作符" style="width: 11%; margin-left: 1%" no-data-text="请先选择因子" clearable @change="handleChangeOperator(rule.id)">
               <el-option
-                v-for="item in factor2Operator.get(rule.factor.factor_code)"
+                v-for="item in factor2Operator.get(rule.factor_code)"
                 :key="item.operator_code"
                 :label="item.display_name"
                 :value="item.operator_code"
               />
             </el-select>
             <div
-              v-if="rule.factor.factor_code === ''
-                || rule.factor.factor_code === undefined
-                || factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).input_el_type === 'Input'" style="width: 62%; margin-left: 1%"
+              v-if="rule.factor_code === ''
+                || rule.factor_code === undefined
+                || factor2Operator2InputType.get(rule.factor_code).get(rule.operator_code).input_el_type === 'Input'" style="width: 62%; margin-left: 1%"
             >
               <el-input
                 v-model="rule.value_list[0]"
                 style="width: 100%"
                 placeholder="匹配值"
-                :disabled="rule.factor.factor_code === '' || rule.factor.factor_code === undefined || rule.operator.operator_code === '' || rule.operator.operator_code === undefined"
+                :disabled="rule.factor_code === '' || rule.factor_code === undefined || rule.operator_code === '' || rule.operator_code === undefined"
                 clearable
               />
             </div>
-            <div v-else-if="factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).input_el_type === 'InputTag'" style="width: 62%; margin-left: 1%">
+            <div v-else-if="factor2Operator2InputType.get(rule.factor_code).get(rule.operator_code).input_el_type === 'InputTag'" style="width: 62%; margin-left: 1%">
               <el-input-tag
                 v-model="rule.value_list"
                 style="width: 100%"
-                :disabled="rule.factor.factor_code === '' || rule.factor.factor_code === undefined || rule.operator.operator_code === '' || rule.operator.operator_code === undefined"
+                :disabled="rule.factor_code === '' || rule.factor_code === undefined || rule.operator_code === '' || rule.operator_code === undefined"
                 clearable
                 placeholder="匹配值"
               />
             </div>
-            <div v-else-if="factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).input_el_type === 'Select'" style="width: 62%; margin-left: 1%">
+            <div v-else-if="factor2Operator2InputType.get(rule.factor_code).get(rule.operator_code).input_el_type === 'Select'" style="width: 62%; margin-left: 1%">
               <el-select v-model="rule.value_list" placeholder="匹配值" style="width: 100%" clearable multiple>
                 <el-option
-                  v-for="allowValue in factor2Operator2InputType.get(rule.factor.factor_code).get(rule.operator.operator_code).allow_values"
+                  v-for="allowValue in factor2Operator2InputType.get(rule.factor_code).get(rule.operator_code).allow_values"
                   :key="allowValue.value"
                   :label="allowValue.display_name"
                   :value="allowValue.value"
