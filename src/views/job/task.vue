@@ -89,6 +89,7 @@ function queryJobDetail() {
     page_size: 1,
     id: task.value.job_id,
   }
+  console.warn(task)
   apiJob.queryJobList(req).then((res) => {
     if (res.data.code !== 0 && res.data.message !== 'success') {
       console.error(res.data.code, res.data.message)
@@ -217,18 +218,26 @@ function queryIndicatorList() {
         factor2Operator.set(factor.factor_code, factor.allow_operators)
         for (let k = 0; k < factor.allow_operators.length; k++) {
           const allowOperator = factor.allow_operators[k]
-          factor2Operator2InputType.set(factor.factor_code, new Map<any, any>([
-            [allowOperator.operator_code, {
+          if (factor2Operator2InputType.has(factor.factor_code)) {
+            factor2Operator2InputType.get(factor.factor_code).set(allowOperator.operator_code, {
               input_el_type: allowOperator.input_el_type === 1 ? 'InputTag' : allowOperator.input_el_type === 2 ? 'Input' : allowOperator.input_el_type === 3 ? 'Select' : 'Input',
               allow_values: allowOperator.allow_values,
-            }],
-            ['', {
-              input_el_type: 'Input',
-            }],
-            [undefined, {
-              input_el_type: 'Input',
-            }],
-          ]))
+            })
+          }
+          else {
+            factor2Operator2InputType.set(factor.factor_code, new Map<any, any>([
+              [allowOperator.operator_code, {
+                input_el_type: allowOperator.input_el_type === 1 ? 'InputTag' : allowOperator.input_el_type === 2 ? 'Input' : allowOperator.input_el_type === 3 ? 'Select' : 'Input',
+                allow_values: allowOperator.allow_values,
+              }],
+              ['', {
+                input_el_type: 'Input',
+              }],
+              [undefined, {
+                input_el_type: 'Input',
+              }],
+            ]))
+          }
         }
       }
     }
@@ -306,6 +315,10 @@ function queryTaskResult() {
     if (res.data.data.total > 0) {
       for (let i = 0; i < res.data.data.task_result_list.length; i++) {
         const esScore = res.data.data.task_result_list[i].es_score
+        if (res.data.data.task_result_list[i].product.shop_image_url.length === 0) {
+          res.data.data.task_result_list[i].product.shop_image_url = '/icons/商店.png'
+        }
+        res.data.data.task_result_list[i].product.shop_image_url = [res.data.data.task_result_list[i].product.shop_image_url]
         res.data.data.task_result_list[i] = res.data.data.task_result_list[i].product
         res.data.data.task_result_list[i].es_score = esScore
       }
@@ -520,7 +533,7 @@ function queryTaskResult() {
                       id: {{ scope.row.product_id }}
                     </el-text>
                     <el-text style="font-size: xx-small;font-weight: normal">
-                      {{ scope.row.status === 1 ? '在售' : scope.row.status === 2 ? '下架' : scope.row.status === 3 ? '封禁' : '未知' }}
+                      {{ scope.row.status === 3 ? '在售' : scope.row.status === 2 ? '封禁' : scope.row.status === 1 ? '下架' : scope.row.status === 0 ? '未上架' : '未知' }}
                     </el-text>
                   </el-space>
                 </el-space>
@@ -551,7 +564,7 @@ function queryTaskResult() {
           </el-table-column>
           <el-table-column style="z-index: -1" prop="brand_name" label="商品品牌/id">
             <template #default="scope">
-              <el-space style="width: 100%" direction="vertical" alignment="normal">
+              <el-space v-if="scope.row.brand_name.length !== 0" style="width: 100%" direction="vertical" alignment="normal">
                 <el-text style="font-size: xx-small;font-weight: bolder">
                   {{ scope.row.brand_name }}
                 </el-text>

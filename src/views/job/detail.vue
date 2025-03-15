@@ -54,6 +54,7 @@ function queryIndicatorList() {
   apiIndicator.queryIndicatorList().then((res) => {
     indicators.value = res.data.data.indicators
   }).finally(() => {
+    console.warn(indicators.value)
     for (let i = 0; i < indicators.value.length; i++) {
       const children = indicators.value[i].children
       for (let j = 0; j < children.length; j++) {
@@ -61,21 +62,30 @@ function queryIndicatorList() {
         factor2Operator.set(factor.factor_code, factor.allow_operators)
         for (let k = 0; k < factor.allow_operators.length; k++) {
           const allowOperator = factor.allow_operators[k]
-          factor2Operator2InputType.set(factor.factor_code, new Map<any, any>([
-            [allowOperator.operator_code, {
+          if (factor2Operator2InputType.has(factor.factor_code)) {
+            factor2Operator2InputType.get(factor.factor_code).set(allowOperator.operator_code, {
               input_el_type: allowOperator.input_el_type === 1 ? 'InputTag' : allowOperator.input_el_type === 2 ? 'Input' : allowOperator.input_el_type === 3 ? 'Select' : 'Input',
               allow_values: allowOperator.allow_values,
-            }],
-            ['', {
-              input_el_type: 'Input',
-            }],
-            [undefined, {
-              input_el_type: 'Input',
-            }],
-          ]))
+            })
+          }
+          else {
+            factor2Operator2InputType.set(factor.factor_code, new Map<any, any>([
+              [allowOperator.operator_code, {
+                input_el_type: allowOperator.input_el_type === 1 ? 'InputTag' : allowOperator.input_el_type === 2 ? 'Input' : allowOperator.input_el_type === 3 ? 'Select' : 'Input',
+                allow_values: allowOperator.allow_values,
+              }],
+              ['', {
+                input_el_type: 'Input',
+              }],
+              [undefined, {
+                input_el_type: 'Input',
+              }],
+            ]))
+          }
         }
       }
     }
+    console.warn(factor2Operator2InputType)
   })
 }
 
@@ -150,7 +160,7 @@ async function applyAndRun(formEl: FormInstance | undefined) {
   await formEl.validate((valid) => {
     if (valid) {
       const req = {
-        job_id: jobID,
+        job_id: job.value.id,
         rules: rules.rules.value.map((rule) => {
           return {
             id: rule.id,
