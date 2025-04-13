@@ -324,7 +324,7 @@ function queryTaskList() {
     for (let i = 0; i < res.data.data.task_list.length; i++) {
       const item = res.data.data.task_list[i]
       item.created_at = new Date(item.created_at * 1000).toLocaleString()
-      item.time_cost = `${item.time_cost}s`
+      item.time_cost = `${item.time_cost}ms`
       item.status = item.status === 1 ? '运行中' : item.status === 2 ? '成功' : item.status === 3 ? '失败' : '未知'
       if (item.rules !== undefined) {
         for (let j = 0; j < item.rules.length; j++) {
